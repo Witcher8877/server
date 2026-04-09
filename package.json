@@ -1,0 +1,16 @@
+{
+  "name": "testeemail",
+  "version": "1.0.0",
+  "description": "Teste para template de email interativo",
+  "license": "ISC",
+  "author": "",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "npm run dev"
+  },
+  "dependencies": {
+    "express": "^5.2.1"
+  }
+}
