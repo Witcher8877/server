@@ -1,36 +1,36 @@
 const express = require("express");
 const fs = require("fs");
-const { createCanvas } = require("canvas");
+const sharp = require("sharp");
 
 const app = express();
 
-app.get("/track/:id", (req, res) => {
+app.get("/track/:id", async (req, res) => {
   const id = req.params.id;
   const agora = new Date().toLocaleString("pt-BR");
   const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
 
-  // Salva a abertura
   fs.appendFileSync("aberturas.txt", `${id} | ${agora} | ${ip}\n`);
 
-  // Gera imagem com o horário
-  const canvas = createCanvas(300, 36);
-  const ctx = canvas.getContext("2d");
+  // SVG com o texto do horário
+  const svg = `
+    <svg width="300" height="36" xmlns="http://www.w3.org/2000/svg">
+      <rect width="300" height="36" fill="#25a244"/>
+      <text x="150" y="23" 
+            font-family="Arial" 
+            font-size="14" 
+            font-weight="bold"
+            fill="white" 
+            text-anchor="middle">
+        ✓ Leitura confirmada - ${agora}
+      </text>
+    </svg>
+  `;
 
-  // Fundo verde
-  ctx.fillStyle = "#25a244";
-  ctx.fillRect(0, 0, 300, 36);
+  const imagem = await sharp(Buffer.from(svg)).png().toBuffer();
 
-  // Texto branco
-  ctx.fillStyle = "#ffffff";
-  ctx.font = "bold 15px Arial";
-  ctx.textAlign = "center";
-  ctx.textBaseline = "middle";
-  ctx.fillText(`✓ Leitura confirmada - ${agora}`, 150, 18);
-
-  // Retorna como imagem PNG
   res.set("Content-Type", "image/png");
   res.set("Cache-Control", "no-store");
-  canvas.createPNGStream().pipe(res);
+  res.send(imagem);
 });
 
 const port = process.env.PORT || 3000;
