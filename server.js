@@ -6,7 +6,9 @@ const app = express();
 
 app.get("/track/:id", async (req, res) => {
   const id = req.params.id;
-  const agora = new Date().toLocaleString("pt-BR");
+  const agora = new Date().toLocaleString("pt-BR", {
+    timeZone: "America/Sao_Paulo"
+  });
   const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
 
   fs.appendFileSync("aberturas.txt", `${id} | ${agora} | ${ip}\n`);
